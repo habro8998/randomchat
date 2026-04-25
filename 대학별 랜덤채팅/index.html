@@ -3,409 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>캠퍼스 랜덤채팅</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #eef2ff, #f8fafc);
-      min-height: 100vh;
-      color: #111827;
-    }
-
-    header {
-      padding: 24px 8%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      font-size: 26px;
-      font-weight: bold;
-      color: #4f46e5;
-    }
-
-    .hero {
-      padding: 50px 8%;
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 40px;
-      align-items: center;
-    }
-
-    .hero h1 {
-      font-size: 46px;
-      margin-bottom: 18px;
-      line-height: 1.2;
-    }
-
-    .hero h1 span {
-      color: #4f46e5;
-    }
-
-    .hero p {
-      color: #4b5563;
-      font-size: 18px;
-      line-height: 1.7;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background: white;
-      padding: 28px;
-      border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-top: 16px;
-      margin-bottom: 8px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-
-    button {
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      border-radius: 12px;
-    }
-
-    .main-btn {
-      width: 100%;
-      margin-top: 20px;
-      padding: 15px;
-      background: #4f46e5;
-      color: white;
-      font-size: 16px;
-    }
-
-    .notice {
-      margin-top: 16px;
-      background: #fff7ed;
-      color: #9a3412;
-      padding: 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .chat-section {
-      display: none;
-      padding: 30px 8% 70px;
-    }
-
-    .chat-card {
-      max-width: 850px;
-      margin: 0 auto;
-      background: white;
-      padding: 26px;
-      border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-
-    .chat-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .status {
-      background: #ecfeff;
-      color: #0e7490;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .chat-box {
-      height: 360px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message {
-      max-width: 75%;
-      padding: 12px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .me {
-      align-self: flex-end;
-      background: #4f46e5;
-      color: white;
-    }
-
-    .other {
-      align-self: flex-start;
-      background: white;
-      border: 1px solid #e5e7eb;
-    }
-
-    .system {
-      align-self: center;
-      background: #eef2ff;
-      color: #4338ca;
-      text-align: center;
-      font-size: 13px;
-    }
-
-    .chat-input {
-      display: grid;
-      grid-template-columns: 1fr 90px;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .chat-input button {
-      background: #4f46e5;
-      color: white;
-    }
-
-    .actions {
-      margin-top: 14px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      padding: 11px 15px;
-      background: #f3f4f6;
-      color: #374151;
-    }
-
-    .danger {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    @media (max-width: 900px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .hero h1 {
-        font-size: 36px;
-      }
-    }
-  </style>
+  <title>CampusChat</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header>
-    <div class="logo">CampusChat</div>
-  </header>
+<header>
+  <div class="logo">CampusChat</div>
+</header>
 
-  <section class="hero" id="homeSection">
-    <div>
-      <h1>
-        원하는 대학교 카테고리에서<br />
-        <span>랜덤채팅</span>을 시작하세요
-      </h1>
-      <p>
-        성균관대, 서울대 등 원하는 대학교 카테고리를 선택하고
-        같은 관심사를 가진 사람들과 가볍게 대화할 수 있는 랜덤채팅 서비스입니다.
-      </p>
+<section class="hero" id="homeSection">
+  <div>
+    <h1>
+      원하는 대학교 카테고리에서<br />
+      <span>랜덤채팅</span>을 시작하세요
+    </h1>
+    <p>
+      성균관대, 서울대 등 원하는 대학교 카테고리를 선택하고
+      같은 카테고리의 사람과 실시간으로 랜덤채팅을 할 수 있습니다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>채팅 시작하기</h2>
+
+    <label for="nickname">닉네임</label>
+    <input type="text" id="nickname" placeholder="예: 익명호랑이" />
+
+    <label for="university">대학교 카테고리</label>
+    <select id="university">
+      <option value="">대학교를 선택하세요</option>
+      <option value="성균관대">성균관대</option>
+      <option value="서울대">서울대</option>
+      <option value="연세대">연세대</option>
+      <option value="고려대">고려대</option>
+      <option value="한양대">한양대</option>
+      <option value="중앙대">중앙대</option>
+      <option value="경희대">경희대</option>
+      <option value="한국외대">한국외대</option>
+    </select>
+
+    <button class="main-btn" onclick="startChat()">랜덤채팅 시작</button>
+
+    <div class="notice">
+      개인정보, 연락처, 주소, 계좌번호 등은 채팅에서 공유하지 마세요.
+    </div>
+  </div>
+</section>
+
+<section class="chat-section" id="chatSection">
+  <div class="chat-card">
+    <div class="chat-top">
+      <div>
+        <h2 id="chatTitle">랜덤채팅</h2>
+        <p id="userInfo"></p>
+      </div>
+      <div class="status" id="status">대기 중</div>
     </div>
 
-    <div class="card">
-      <h2>채팅 시작하기</h2>
+    <div class="chat-box" id="chatBox"></div>
 
-      <label for="nickname">닉네임</label>
-      <input type="text" id="nickname" placeholder="예: 익명호랑이" />
-
-      <label for="university">대학교 카테고리</label>
-      <select id="university">
-        <option value="">대학교를 선택하세요</option>
-        <option value="성균관대">성균관대</option>
-        <option value="서울대">서울대</option>
-        <option value="연세대">연세대</option>
-        <option value="고려대">고려대</option>
-        <option value="한양대">한양대</option>
-        <option value="중앙대">중앙대</option>
-        <option value="경희대">경희대</option>
-        <option value="한국외대">한국외대</option>
-      </select>
-
-      <button class="main-btn" onclick="startChat()">랜덤채팅 시작</button>
-
-      <div class="notice">
-        개인정보, 연락처, 주소, 계좌번호 등은 채팅에서 공유하지 않는 것이 안전합니다.
-      </div>
+    <div class="chat-input">
+      <input type="text" id="messageInput" placeholder="메시지를 입력하세요" />
+      <button onclick="sendMessage()">전송</button>
     </div>
-  </section>
 
-  <section class="chat-section" id="chatSection">
-    <div class="chat-card">
-      <div class="chat-top">
-        <div>
-          <h2 id="chatTitle">랜덤채팅</h2>
-          <p id="userInfo"></p>
-        </div>
-        <div class="status" id="status">상대 찾는 중...</div>
-      </div>
-
-      <div class="chat-box" id="chatBox"></div>
-
-      <div class="chat-input">
-        <input type="text" id="messageInput" placeholder="메시지를 입력하세요" />
-        <button onclick="sendMessage()">전송</button>
-      </div>
-
-      <div class="actions">
-        <button class="action-btn" onclick="findNewPartner()">다음 상대 찾기</button>
-        <button class="action-btn danger" onclick="blockUser()">차단</button>
-        <button class="action-btn danger" onclick="reportUser()">신고</button>
-        <button class="action-btn" onclick="goHome()">나가기</button>
-      </div>
+    <div class="actions">
+      <button class="action-btn" onclick="nextPartner()">다음 상대 찾기</button>
+      <button class="action-btn danger" onclick="reportUser()">신고</button>
+      <button class="action-btn" onclick="leaveChat()">나가기</button>
     </div>
-  </section>
+  </div>
+</section>
 
-  <script>
-    let nickname = "";
-    let university = "";
-
-    const randomReplies = [
-      "안녕하세요!",
-      "무슨 학과세요?",
-      "오늘 뭐 하셨어요?",
-      "이 학교 카테고리에서 처음 채팅해봐요.",
-      "반가워요!",
-      "요즘 학교생활 어때요?"
-    ];
-
-    const bannedWords = ["욕설", "비하", "혐오"];
-
-    function startChat() {
-      nickname = document.getElementById("nickname").value.trim();
-      university = document.getElementById("university").value;
-
-      if (!nickname) {
-        alert("닉네임을 입력해주세요.");
-        return;
-      }
-
-      if (!university) {
-        alert("대학교 카테고리를 선택해주세요.");
-        return;
-      }
-
-      document.getElementById("homeSection").style.display = "none";
-      document.getElementById("chatSection").style.display = "block";
-
-      document.getElementById("chatTitle").innerText = university + " 랜덤채팅";
-      document.getElementById("userInfo").innerText = nickname + "님으로 접속 중";
-
-      clearChat();
-      addMessage("system", university + " 카테고리에서 상대를 찾고 있습니다...");
-
-      setTimeout(() => {
-        document.getElementById("status").innerText = "상대와 연결됨";
-        addMessage("system", "랜덤 상대와 연결되었습니다.");
-        addMessage("other", "안녕하세요!");
-      }, 1000);
-    }
-
-    function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const message = input.value.trim();
-
-      if (!message) return;
-
-      if (containsBannedWord(message)) {
-        alert("부적절한 표현이 포함되어 있습니다.");
-        return;
-      }
-
-      addMessage("me", message);
-      input.value = "";
-
-      setTimeout(() => {
-        const reply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
-        addMessage("other", reply);
-      }, 700);
-    }
-
-    function addMessage(type, text) {
-      const chatBox = document.getElementById("chatBox");
-      const div = document.createElement("div");
-
-      div.className = "message " + type;
-      div.innerText = text;
-
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function containsBannedWord(message) {
-      return bannedWords.some(word => message.includes(word));
-    }
-
-    function findNewPartner() {
-      clearChat();
-      document.getElementById("status").innerText = "새 상대 찾는 중...";
-      addMessage("system", "새로운 상대를 찾고 있습니다...");
-
-      setTimeout(() => {
-        document.getElementById("status").innerText = "상대와 연결됨";
-        addMessage("system", "새로운 상대와 연결되었습니다.");
-        addMessage("other", "반가워요!");
-      }, 1000);
-    }
-
-    function blockUser() {
-      alert("상대가 차단되었습니다.");
-      findNewPartner();
-    }
-
-    function reportUser() {
-      alert("신고가 접수되었습니다.");
-      findNewPartner();
-    }
-
-    function clearChat() {
-      document.getElementById("chatBox").innerHTML = "";
-    }
-
-    function goHome() {
-      document.getElementById("chatSection").style.display = "none";
-      document.getElementById("homeSection").style.display = "grid";
-      clearChat();
-    }
-
-    document.getElementById("messageInput").addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        sendMessage();
-      }
-    });
-  </script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
