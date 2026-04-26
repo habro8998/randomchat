@@ -2,16 +2,25 @@ const socket = io();
 
 let nickname = "";
 let university = "";
+let gender = "";
 let connected = false;
+let currentPartnerName = "";
+let currentPartnerGender = "";
 
 const bannedWords = ["욕설", "비하", "혐오"];
 
 function startChat() {
   nickname = document.getElementById("nickname").value.trim();
+  gender = document.getElementById("gender").value;
   university = document.getElementById("university").value;
 
   if (!nickname) {
     alert("닉네임을 입력해주세요.");
+    return;
+  }
+
+  if (!gender) {
+    alert("성별을 선택해주세요.");
     return;
   }
 
@@ -24,7 +33,8 @@ function startChat() {
   document.getElementById("chatSection").style.display = "block";
 
   document.getElementById("chatTitle").innerText = university + " 랜덤채팅";
-  document.getElementById("userInfo").innerText = nickname + "님으로 접속 중";
+  document.getElementById("userInfo").innerText = "나: " + nickname + " (" + gender + ")";
+  document.getElementById("partnerInfo").innerText = "상대: 찾는 중";
 
   clearChat();
   setStatus("상대 찾는 중...");
@@ -32,7 +42,8 @@ function startChat() {
 
   socket.emit("join", {
     nickname,
-    university
+    university,
+    gender
   });
 }
 
@@ -52,7 +63,7 @@ function sendMessage() {
     return;
   }
 
-  addMessage("me", message);
+  addMessage("me", message, nickname + " (" + gender + ")");
   socket.emit("message", message);
 
   input.value = "";
@@ -61,16 +72,27 @@ function sendMessage() {
 function nextPartner() {
   clearChat();
   connected = false;
+  currentPartnerName = "";
+  currentPartnerGender = "";
+
   setStatus("새 상대 찾는 중...");
+  document.getElementById("partnerInfo").innerText = "상대: 찾는 중";
+
   addMessage("system", "새로운 상대를 찾고 있습니다.");
   socket.emit("next");
 }
 
 function reportUser() {
   alert("신고가 접수되었습니다.");
+
   connected = false;
+  currentPartnerName = "";
+  currentPartnerGender = "";
+
   clearChat();
   setStatus("새 상대 찾는 중...");
+  document.getElementById("partnerInfo").innerText = "상대: 찾는 중";
+
   socket.emit("report");
 }
 
@@ -78,14 +100,35 @@ function leaveChat() {
   location.reload();
 }
 
-function addMessage(type, text) {
+function addMessage(type, text, senderName = "") {
   const chatBox = document.getElementById("chatBox");
-  const div = document.createElement("div");
 
-  div.className = "message " + type;
-  div.innerText = text;
+  if (type === "system") {
+    const div = document.createElement("div");
+    div.className = "message system";
+    div.innerText = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return;
+  }
 
-  chatBox.appendChild(div);
+  const wrapper = document.createElement("div");
+  wrapper.className = "message-wrap " + (type === "me" ? "me-wrap" : "other-wrap");
+
+  const nameTag = document.createElement("div");
+  nameTag.className = "sender-name";
+  nameTag.innerText = senderName || (type === "me"
+    ? nickname + " (" + gender + ")"
+    : currentPartnerName + " (" + currentPartnerGender + ")");
+
+  const bubble = document.createElement("div");
+  bubble.className = "message " + type;
+  bubble.innerText = text;
+
+  wrapper.appendChild(nameTag);
+  wrapper.appendChild(bubble);
+
+  chatBox.appendChild(wrapper);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
@@ -103,23 +146,48 @@ function containsBannedWord(message) {
 
 socket.on("waiting", (msg) => {
   connected = false;
+  currentPartnerName = "";
+  currentPartnerGender = "";
+
   setStatus("대기 중");
+  document.getElementById("partnerInfo").innerText = "상대: 찾는 중";
+
   addMessage("system", msg);
 });
 
-socket.on("matched", (msg) => {
+socket.on("matched", (data) => {
   connected = true;
+
+  nickname = data.myName || nickname;
+  gender = data.myGender || gender;
+  currentPartnerName = data.partnerName || "익명";
+  currentPartnerGender = data.partnerGender || "성별 미선택";
+
   setStatus("상대와 연결됨");
-  addMessage("system", msg);
+
+  document.getElementById("userInfo").innerText = "나: " + nickname + " (" + gender + ")";
+  document.getElementById("partnerInfo").innerText =
+    "상대: " + currentPartnerName + " (" + currentPartnerGender + ")";
+
+  addMessage(
+    "system",
+    currentPartnerName + " (" + currentPartnerGender + ")님과 연결되었습니다."
+  );
 });
 
-socket.on("message", (msg) => {
-  addMessage("other", msg);
+socket.on("message", (data) => {
+  const sender = data.senderName + " (" + data.senderGender + ")";
+  addMessage("other", data.text, sender);
 });
 
 socket.on("partnerLeft", (msg) => {
   connected = false;
+  currentPartnerName = "";
+  currentPartnerGender = "";
+
   setStatus("상대 찾는 중...");
+  document.getElementById("partnerInfo").innerText = "상대: 찾는 중";
+
   addMessage("system", msg);
 });
 
