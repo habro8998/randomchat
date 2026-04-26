@@ -12,102 +12,108 @@ const waitingUsers = {};
 const partners = {};
 
 io.on("connection", (socket) => {
-  console.log("접속:", socket.id);
-
-  socket.on("join", ({ nickname, university }) => {
+  socket.on("join", ({ nickname, university, gender }) => {
     socket.nickname = nickname;
     socket.university = university;
+    socket.gender = gender;
 
-    if (!waitingUsers[university]) {
-      waitingUsers[university] = [];
-    }
-
-    const partner = waitingUsers[university].find((id) => id !== socket.id);
-
-    if (partner) {
-      waitingUsers[university] = waitingUsers[university].filter((id) => id !== partner);
-
-      partners[socket.id] = partner;
-      partners[partner] = socket.id;
-
-      socket.emit("matched", "상대와 연결되었습니다.");
-      io.to(partner).emit("matched", "상대와 연결되었습니다.");
-    } else {
-      waitingUsers[university].push(socket.id);
-      socket.emit("waiting", "상대를 찾는 중입니다...");
-    }
+    matchUser(socket);
   });
 
   socket.on("message", (msg) => {
-    const partner = partners[socket.id];
+    const partnerId = partners[socket.id];
 
-    if (partner) {
-      io.to(partner).emit("message", msg);
+    if (partnerId) {
+      io.to(partnerId).emit("message", {
+        text: msg,
+        senderName: socket.nickname || "익명",
+        senderGender: socket.gender || "성별 미선택"
+      });
     }
   });
 
   socket.on("next", () => {
     disconnectPartner(socket);
-    rejoin(socket);
+    matchUser(socket);
   });
 
   socket.on("report", () => {
-    const partner = partners[socket.id];
+    const partnerId = partners[socket.id];
 
-    if (partner) {
-      io.to(partner).emit("partnerLeft", "상대가 대화를 종료했습니다.");
-      delete partners[partner];
+    if (partnerId) {
+      io.to(partnerId).emit("partnerLeft", "상대가 대화를 종료했습니다.");
+      delete partners[partnerId];
       delete partners[socket.id];
     }
 
     socket.emit("reported", "신고가 접수되었습니다.");
-    rejoin(socket);
+    matchUser(socket);
   });
 
   socket.on("disconnect", () => {
-    console.log("나감:", socket.id);
     removeFromWaiting(socket);
     disconnectPartner(socket);
   });
 });
 
-function rejoin(socket) {
-  if (!socket.nickname || !socket.university) return;
+function matchUser(socket) {
+  const university = socket.university;
+  if (!university) return;
 
-  setTimeout(() => {
-    socket.emit("waiting", "새로운 상대를 찾는 중입니다...");
+  if (!waitingUsers[university]) {
+    waitingUsers[university] = [];
+  }
 
-    if (!waitingUsers[socket.university]) {
-      waitingUsers[socket.university] = [];
-    }
+  waitingUsers[university] = waitingUsers[university].filter(
+    (id) => id !== socket.id
+  );
 
-    const partner = waitingUsers[socket.university].find((id) => id !== socket.id);
+  const partnerId = waitingUsers[university].find((id) => id !== socket.id);
 
-    if (partner) {
-      waitingUsers[socket.university] = waitingUsers[socket.university].filter((id) => id !== partner);
+  if (partnerId) {
+    waitingUsers[university] = waitingUsers[university].filter(
+      (id) => id !== partnerId
+    );
 
-      partners[socket.id] = partner;
-      partners[partner] = socket.id;
+    const partnerSocket = io.sockets.sockets.get(partnerId);
 
-      socket.emit("matched", "새로운 상대와 연결되었습니다.");
-      io.to(partner).emit("matched", "새로운 상대와 연결되었습니다.");
-    } else {
-      waitingUsers[socket.university].push(socket.id);
-    }
-  }, 500);
+    partners[socket.id] = partnerId;
+    partners[partnerId] = socket.id;
+
+    socket.emit("matched", {
+      myName: socket.nickname || "익명",
+      myGender: socket.gender || "성별 미선택",
+      partnerName: partnerSocket?.nickname || "익명",
+      partnerGender: partnerSocket?.gender || "성별 미선택"
+    });
+
+    io.to(partnerId).emit("matched", {
+      myName: partnerSocket?.nickname || "익명",
+      myGender: partnerSocket?.gender || "성별 미선택",
+      partnerName: socket.nickname || "익명",
+      partnerGender: socket.gender || "성별 미선택"
+    });
+  } else {
+    waitingUsers[university].push(socket.id);
+    socket.emit("waiting", "상대를 찾는 중입니다...");
+  }
 }
 
 function disconnectPartner(socket) {
-  const partner = partners[socket.id];
+  const partnerId = partners[socket.id];
 
-  if (partner) {
-    io.to(partner).emit("partnerLeft", "상대가 나갔습니다. 새로운 상대를 기다려주세요.");
-    delete partners[partner];
+  if (partnerId) {
+    io.to(partnerId).emit("partnerLeft", "상대가 나갔습니다. 새로운 상대를 찾고 있습니다.");
+
+    delete partners[partnerId];
     delete partners[socket.id];
 
-    const partnerSocket = io.sockets.sockets.get(partner);
+    const partnerSocket = io.sockets.sockets.get(partnerId);
+
     if (partnerSocket) {
-      rejoin(partnerSocket);
+      setTimeout(() => {
+        matchUser(partnerSocket);
+      }, 500);
     }
   }
 }
@@ -116,7 +122,9 @@ function removeFromWaiting(socket) {
   const university = socket.university;
 
   if (university && waitingUsers[university]) {
-    waitingUsers[university] = waitingUsers[university].filter((id) => id !== socket.id);
+    waitingUsers[university] = waitingUsers[university].filter(
+      (id) => id !== socket.id
+    );
   }
 }
 
