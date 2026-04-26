@@ -6,9 +6,9 @@
 }
 
 body {
-  background: linear-gradient(135deg, #eef2ff, #f8fafc);
+  background: #050816;
   min-height: 100vh;
-  color: #111827;
+  color: #f9fafb;
 }
 
 header {
@@ -18,7 +18,7 @@ header {
 .logo {
   font-size: 26px;
   font-weight: bold;
-  color: #4f46e5;
+  color: #818cf8;
 }
 
 .hero {
@@ -33,24 +33,31 @@ header {
   font-size: 46px;
   margin-bottom: 18px;
   line-height: 1.2;
+  color: #f9fafb;
 }
 
 .hero h1 span {
-  color: #4f46e5;
+  color: #818cf8;
 }
 
 .hero p {
-  color: #4b5563;
+  color: #cbd5e1;
   font-size: 18px;
   line-height: 1.7;
 }
 
 .card,
 .chat-card {
-  background: white;
+  background: #111827;
   padding: 28px;
   border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+  border: 1px solid #1f2937;
+}
+
+.card h2,
+.chat-card h2 {
+  color: #f9fafb;
 }
 
 label {
@@ -58,6 +65,7 @@ label {
   font-weight: bold;
   margin-top: 16px;
   margin-bottom: 8px;
+  color: #e5e7eb;
 }
 
 input,
@@ -65,8 +73,14 @@ select {
   width: 100%;
   padding: 14px;
   border-radius: 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #374151;
+  background: #020617;
+  color: #f9fafb;
   font-size: 15px;
+}
+
+input::placeholder {
+  color: #9ca3af;
 }
 
 button {
@@ -87,12 +101,13 @@ button {
 
 .notice {
   margin-top: 16px;
-  background: #fff7ed;
-  color: #9a3412;
+  background: #2a1d12;
+  color: #fed7aa;
   padding: 12px;
   border-radius: 12px;
   font-size: 13px;
   line-height: 1.5;
+  border: 1px solid #7c2d12;
 }
 
 .chat-section {
@@ -108,15 +123,27 @@ button {
 .chat-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 18px;
   gap: 10px;
   flex-wrap: wrap;
 }
 
+#userInfo,
+#partnerInfo {
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #d1d5db;
+}
+
+#partnerInfo {
+  color: #a5b4fc;
+}
+
 .status {
-  background: #ecfeff;
-  color: #0e7490;
+  background: #083344;
+  color: #67e8f9;
   padding: 8px 14px;
   border-radius: 999px;
   font-size: 13px;
@@ -124,9 +151,9 @@ button {
 }
 
 .chat-box {
-  height: 360px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  height: 390px;
+  background: #020617;
+  border: 1px solid #1f2937;
   border-radius: 18px;
   padding: 16px;
   overflow-y: auto;
@@ -135,32 +162,58 @@ button {
   gap: 12px;
 }
 
-.message {
+.message-wrap {
+  display: flex;
+  flex-direction: column;
   max-width: 75%;
+}
+
+.message-wrap.me-wrap {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-wrap.other-wrap {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.sender-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #9ca3af;
+  margin-bottom: 4px;
+  padding: 0 4px;
+}
+
+.message {
   padding: 12px 14px;
   border-radius: 16px;
   font-size: 14px;
   line-height: 1.5;
+  word-break: break-word;
 }
 
 .me {
-  align-self: flex-end;
   background: #4f46e5;
   color: white;
+  border-bottom-right-radius: 4px;
 }
 
 .other {
-  align-self: flex-start;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: #111827;
+  border: 1px solid #374151;
+  color: #f9fafb;
+  border-bottom-left-radius: 4px;
 }
 
 .system {
   align-self: center;
-  background: #eef2ff;
-  color: #4338ca;
+  background: #1e1b4b;
+  color: #c7d2fe;
   text-align: center;
   font-size: 13px;
+  max-width: 90%;
 }
 
 .chat-input {
@@ -184,13 +237,13 @@ button {
 
 .action-btn {
   padding: 11px 15px;
-  background: #f3f4f6;
-  color: #374151;
+  background: #1f2937;
+  color: #e5e7eb;
 }
 
 .danger {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #7f1d1d;
+  color: #fecaca;
 }
 
 @media (max-width: 900px) {
@@ -200,5 +253,9 @@ button {
 
   .hero h1 {
     font-size: 36px;
+  }
+
+  .message-wrap {
+    max-width: 85%;
   }
 }
