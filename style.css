@@ -1,0 +1,286 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #0b1020;
+  min-height: 100vh;
+  color: #e5e7eb;
+}
+
+header {
+  padding: 24px 8%;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: #a78bfa;
+}
+
+.hero {
+  padding: 50px 8%;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 40px;
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: 46px;
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+
+.hero h1 span {
+  color: #a78bfa;
+}
+
+.hero p {
+  color: #9ca3af;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.card,
+.chat-card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  padding: 28px;
+  border-radius: 24px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  color: #d1d5db;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #374151;
+  background: #0f172a;
+  color: #f3f4f6;
+  font-size: 15px;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 12px;
+}
+
+.main-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background: #7c3aed;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.notice {
+  margin-top: 16px;
+  background: #1f2937;
+  color: #cbd5e1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.chat-section {
+  display: none;
+  padding: 30px 8% 70px;
+}
+
+.chat-card {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.chat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#userInfo,
+#partnerInfo {
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #d1d5db;
+}
+
+#partnerInfo {
+  color: #a78bfa;
+}
+
+.presence-panel {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+}
+
+.presence-panel p {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+.status {
+  background: #1e293b;
+  color: #93c5fd;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.chat-box {
+  height: 420px;
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 18px;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  touch-action: pan-x;
+}
+
+.message-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: 78%;
+}
+
+.message-wrap.me-wrap {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-wrap.other-wrap {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.sender-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #9ca3af;
+  margin-bottom: 4px;
+  padding: 0 4px;
+}
+
+.message {
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.me {
+  background: #7c3aed;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.other {
+  background: #1f2937;
+  border: 1px solid #334155;
+  color: #f3f4f6;
+  border-bottom-left-radius: 4px;
+}
+
+.message-meta {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.system {
+  align-self: center;
+  background: #1e1b4b;
+  color: #c4b5fd;
+  text-align: center;
+  font-size: 13px;
+  max-width: 90%;
+}
+
+.typing-indicator {
+  align-self: flex-start;
+  color: #94a3b8;
+  font-size: 12px;
+  padding: 4px 8px;
+  margin-top: 2px;
+}
+
+.chat-input {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.chat-input button {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 11px 15px;
+  background: #1f2937;
+  color: #d1d5db;
+}
+
+.danger {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .message-wrap {
+    max-width: 88%;
+  }
+
+  .chat-card {
+    padding: 18px;
+  }
+
+  .chat-box {
+    height: 56vh;
+  }
+}
