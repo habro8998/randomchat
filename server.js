@@ -69,6 +69,53 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("poke_send", ({ topic }) => {
+    const partnerId = partners[socket.id];
+    if (!partnerId || !topic) return;
+    io.to(partnerId).emit("poke_received", { topic });
+  });
+
+  socket.on("location_share_request", () => {
+    const partnerId = partners[socket.id];
+    if (!partnerId) return;
+    io.to(partnerId).emit("location_share_requested");
+  });
+
+  socket.on("location_share_response", ({ accepted, reason }) => {
+    const partnerId = partners[socket.id];
+    if (!partnerId) return;
+
+    io.to(partnerId).emit("location_share_response", {
+      accepted: Boolean(accepted),
+      reason: reason || ""
+    });
+  });
+
+  socket.on("location_share_ready", () => {
+    const partnerId = partners[socket.id];
+    if (!partnerId) return;
+    io.to(socket.id).emit("location_share_started");
+    io.to(partnerId).emit("location_share_started");
+  });
+
+  socket.on("location_update", ({ location }) => {
+    const partnerId = partners[socket.id];
+    if (!partnerId || !location) return;
+    io.to(partnerId).emit("location_update", { location });
+  });
+
+  socket.on("location_share_stop", () => {
+    const partnerId = partners[socket.id];
+    if (partnerId) {
+      io.to(partnerId).emit("location_share_stopped", {
+        message: "상대가 위치 공유를 종료했습니다."
+      });
+    }
+    socket.emit("location_share_stopped", {
+      message: "위치 공유가 종료되었습니다."
+    });
+  });
+
   socket.on("next", () => {
     disconnectPartner(socket);
     setUserStatus(socket.id, "waiting");
@@ -152,6 +199,10 @@ function disconnectPartner(socket, partnerLeftMessage) {
   const partnerId = partners[socket.id];
 
   if (partnerId) {
+    io.to(partnerId).emit("location_share_stopped", {
+      message: "상대 연결 종료로 위치 공유가 중지되었습니다."
+    });
+
     io.to(partnerId).emit(
       "partnerLeft",
       partnerLeftMessage || "상대가 나갔습니다. 새로운 상대를 찾고 있습니다."
