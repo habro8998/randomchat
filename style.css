@@ -17,10 +17,29 @@ body {
   text-orientation: mixed;
 }
 
+html.chat-ui-active,
+body.chat-ui-active {
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
 body {
   background: #0b1020;
   min-height: 100vh;
   color: #e5e7eb;
+}
+
+body.chat-ui-active {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  max-height: 100dvh;
+}
+
+body.chat-ui-active header {
+  flex-shrink: 0;
 }
 
 header {
@@ -127,10 +146,19 @@ button {
 
 .chat-section {
   display: none;
+  flex-direction: column;
   padding: 30px 8% 70px;
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+body.chat-ui-active #chatSection.chat-section {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px 5% 12px;
 }
 
 .chat-card {
@@ -138,6 +166,24 @@ button {
   max-width: 850px;
   margin: 0 auto;
   overflow-x: hidden;
+}
+
+body.chat-ui-active .chat-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body.chat-ui-active .chat-top {
+  flex-shrink: 0;
+}
+
+body.chat-ui-active .chat-input,
+body.chat-ui-active .actions,
+body.chat-ui-active .secondary-actions {
+  flex-shrink: 0;
 }
 
 .chat-top {
@@ -194,6 +240,14 @@ button {
   height: 420px;
   overflow: hidden;
   border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+body.chat-ui-active .chat-messages-wrap {
+  flex: 1;
+  min-height: 0;
+  height: auto;
 }
 
 .chat-box {
@@ -201,53 +255,79 @@ button {
   background: #0f172a;
   border: 1px solid #1f2937;
   border-radius: 18px;
-  padding: 16px;
-  padding-bottom: 52px;
+  padding: 12px 14px;
+  padding-bottom: 48px;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   touch-action: pan-y;
+  flex: 1;
+  min-height: 0;
+}
+
+body.chat-ui-active .chat-box {
+  height: auto;
 }
 
 .message-wrap {
   display: flex;
   flex-direction: column;
   max-width: 78%;
+  min-width: 80px;
+  margin-bottom: 2px;
 }
 
 .message-wrap.me-wrap {
   align-self: flex-end;
   align-items: flex-end;
-  margin-bottom: 6px;
+  margin-top: 2px;
 }
 
 .message-wrap.other-wrap {
   align-self: flex-start;
   align-items: flex-start;
+  margin-top: 2px;
 }
 
 .sender-name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: #9ca3af;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   padding: 0 4px;
 }
 
 .message {
-  padding: 12px 14px;
-  border-radius: 16px;
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 72px;
+  padding: 10px 14px;
+  border-radius: 14px;
   font-size: 14px;
   line-height: 1.5;
-  word-break: break-word;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.message.system {
+  display: block;
+  width: auto;
+  max-width: 90%;
+  min-width: 0;
+}
+
+.me,
+.other {
+  word-break: keep-all;
   overflow-wrap: break-word;
   white-space: normal;
 }
 
 .me {
-  max-width: 75%;
   align-self: flex-end;
   background: #7c3aed;
   color: #ffffff;
@@ -269,7 +349,7 @@ button {
   line-height: 1;
   min-height: 10px;
   white-space: normal;
-  word-break: break-word;
+  word-break: keep-all;
   overflow-wrap: break-word;
 }
 
@@ -289,7 +369,7 @@ button {
   font-size: 13px;
   max-width: 90%;
   white-space: normal;
-  word-break: break-word;
+  word-break: keep-all;
   overflow-wrap: break-word;
 }
 
@@ -455,8 +535,16 @@ button {
     height: 56vh;
   }
 
+  body.chat-ui-active .chat-messages-wrap {
+    height: auto;
+  }
+
   .chat-box {
     height: 100%;
+  }
+
+  body.chat-ui-active .chat-box {
+    height: auto;
   }
 
   .actions .action-btn {
@@ -470,5 +558,25 @@ button {
     line-height: 1.35;
     font-size: 12px;
     padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .message-wrap {
+    max-width: 82%;
+    min-width: 90px;
+  }
+
+  .message {
+    min-width: 72px;
+    font-size: 14px;
+  }
+
+  body.chat-ui-active #chatSection.chat-section {
+    padding: 12px 4% 10px;
+  }
+
+  body.chat-ui-active .chat-card {
+    padding: 14px;
   }
 }

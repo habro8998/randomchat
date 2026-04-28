@@ -36,7 +36,9 @@ function startChat() {
   }
 
   document.getElementById("homeSection").style.display = "none";
-  document.getElementById("chatSection").style.display = "block";
+  document.getElementById("chatSection").style.display = "flex";
+  document.documentElement.classList.add("chat-ui-active");
+  document.body.classList.add("chat-ui-active");
 
   document.getElementById("chatTitle").innerText = university + " 랜덤채팅";
   document.getElementById("userInfo").innerText = "나: " + nickname;
