@@ -167,12 +167,22 @@ button {
   font-weight: bold;
 }
 
-.chat-box {
+.chat-messages-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
   height: 420px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.chat-box {
+  height: 100%;
   background: #0f172a;
   border: 1px solid #1f2937;
   border-radius: 18px;
   padding: 16px;
+  padding-bottom: 52px;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -190,6 +200,7 @@ button {
 .message-wrap.me-wrap {
   align-self: flex-end;
   align-items: flex-end;
+  margin-bottom: 6px;
 }
 
 .message-wrap.other-wrap {
@@ -215,6 +226,8 @@ button {
 }
 
 .me {
+  max-width: 75%;
+  align-self: flex-end;
   background: #7c3aed;
   color: #ffffff;
   border-bottom-right-radius: 4px;
@@ -230,10 +243,14 @@ button {
 .message-meta {
   margin-top: 2px;
   margin-right: 4px;
-  font-size: 10px;
+  font-size: 11px;
   color: #999999;
   line-height: 1;
   min-height: 10px;
+}
+
+.message-meta.read-receipt {
+  font-size: 10px;
 }
 
 .message-meta.hidden {
@@ -289,17 +306,13 @@ button {
 }
 
 .actions .action-btn {
-  flex: 1 1 180px;
+  flex: 1 1 calc(50% - 5px);
+  min-width: 0;
 }
 
 .danger {
   background: #7f1d1d;
   color: #fecaca;
-}
-
-.location-share-btn {
-  background: #2563eb;
-  color: #ffffff;
 }
 
 .poke-btn {
@@ -315,62 +328,30 @@ button {
   flex: 1 1 120px;
 }
 
-.chat-toast {
-  margin-bottom: 8px;
-  min-height: 0;
-  text-align: center;
-  color: #d1fae5;
+.poke-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: #ffffff;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  z-index: 20;
+  white-space: nowrap;
+  max-width: calc(100% - 32px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.chat-toast.show {
+.poke-toast.show {
   opacity: 1;
-}
-
-.location-card {
-  display: none;
-  margin-bottom: 10px;
-  background: #111827;
-  border: 1px solid #334155;
-  border-radius: 14px;
-  padding: 12px;
-}
-
-.location-card.show {
-  display: block;
-}
-
-.location-card h4 {
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-
-.location-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 8px;
-  margin-bottom: 10px;
-}
-
-.location-cell {
-  background: #0f172a;
-  border: 1px solid #1f2937;
-  border-radius: 10px;
-  padding: 8px;
-  font-size: 12px;
-  line-height: 1.5;
-  word-break: break-word;
-}
-
-.location-stop-btn {
-  background: #7f1d1d;
-  color: #fecaca;
-  padding: 10px 12px;
-  width: 100%;
 }
 
 .modal-overlay {
@@ -435,8 +416,12 @@ button {
     padding: 18px;
   }
 
-  .chat-box {
+  .chat-messages-wrap {
     height: 56vh;
+  }
+
+  .chat-box {
+    height: 100%;
   }
 
   .actions .action-btn {
@@ -445,7 +430,11 @@ button {
     padding: 10px 10px;
   }
 
-  .location-grid {
-    grid-template-columns: 1fr;
+  .poke-toast {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+    font-size: 12px;
+    padding: 8px 12px;
   }
 }

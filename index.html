@@ -73,9 +73,10 @@
         <div class="status" id="status">대기 중</div>
       </div>
 
-      <div class="chat-toast" id="pokeToast" aria-live="polite"></div>
-      <div class="location-card" id="locationShareCard"></div>
-      <div class="chat-box" id="chatBox"></div>
+      <div class="chat-messages-wrap" id="chatMessagesWrap">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="poke-toast" id="pokeToast" aria-live="polite" hidden></div>
+      </div>
 
       <div class="chat-input">
         <input type="text" id="messageInput" placeholder="메시지를 입력하세요" />
@@ -83,7 +84,6 @@
       </div>
 
       <div class="actions">
-        <button class="action-btn location-share-btn" onclick="openLocationConsent()">서로의 위치 공유하기</button>
         <button class="action-btn poke-btn" onclick="togglePokeMenu()">찔러보기</button>
         <button class="action-btn next-btn" onclick="nextPartner()">다음 상대 찾기</button>
       </div>
@@ -104,28 +104,6 @@
       </div>
       <div class="modal-actions">
         <button class="action-btn" onclick="closePokeMenu()">닫기</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="locationConsentModal">
-    <div class="modal-card">
-      <h3>위치 공유 동의</h3>
-      <p>내 위치를 상대와 공유하시겠습니까?</p>
-      <div class="modal-actions">
-        <button class="action-btn danger" onclick="closeLocationConsent()">취소</button>
-        <button class="action-btn location-share-btn" onclick="approveLocationConsent()">동의</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="opponentLocationConsentModal">
-    <div class="modal-card">
-      <h3>상대의 요청</h3>
-      <p>상대가 위치 공유를 요청했습니다.<br />내 위치도 함께 공유하시겠습니까?</p>
-      <div class="modal-actions">
-        <button class="action-btn danger" onclick="rejectOpponentLocationConsent()">거절</button>
-        <button class="action-btn location-share-btn" onclick="approveOpponentLocationConsent()">동의</button>
       </div>
     </div>
   </div>

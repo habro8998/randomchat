@@ -10,19 +10,12 @@ let myTyping = false;
 let typingTimeoutId = null;
 let partnerTypingTimeoutId = null;
 let lastReadMessageId = null;
-let readReceiptTimeoutId = null;
 let pokeToastTimeoutId = null;
-let locationWatchId = null;
-let locationStopTimeoutId = null;
-let locationRequestPending = false;
-let incomingLocationRequestPending = false;
-let isLocationSharing = false;
-let myLocation = null;
-let opponentLocation = null;
 
 const myMessageStatusMap = new Map();
 const bannedWords = ["욕설", "비하", "혐오"];
-const LOCATION_SHARE_DURATION_MS = 15 * 60 * 1000;
+
+const POKE_TOAST_MS = 5000;
 
 function startChat() {
   nickname = document.getElementById("nickname").value.trim();
@@ -79,7 +72,6 @@ function sendMessage() {
 }
 
 function nextPartner() {
-  stopLocationSharing("상대 변경으로 위치 공유가 종료되었습니다.");
   resetConversationState();
   connected = false;
   currentPartnerName = "";
@@ -97,7 +89,6 @@ function blockUser() {
     return;
   }
 
-  stopLocationSharing("차단으로 위치 공유가 종료되었습니다.");
   resetConversationState();
   connected = false;
   currentPartnerName = "";
@@ -110,7 +101,6 @@ function blockUser() {
 }
 
 function leaveChat() {
-  stopLocationSharing("", false);
   location.reload();
 }
 
@@ -125,6 +115,10 @@ function addMessage(type, text, senderName = "", options = {}) {
     chatBox.appendChild(div);
     scrollToBottom();
     return;
+  }
+
+  if (type === "me" || type === "other") {
+    clearReadReceiptDisplay();
   }
 
   const wrapper = document.createElement("div");
@@ -147,7 +141,7 @@ function addMessage(type, text, senderName = "", options = {}) {
 
   if (type === "me" && options.messageId) {
     const meta = document.createElement("div");
-    meta.className = "message-meta hidden";
+    meta.className = "message-meta hidden read-receipt";
     wrapper.appendChild(meta);
     myMessageStatusMap.set(options.messageId, meta);
   }
@@ -192,15 +186,8 @@ function resetConversationState() {
   lastSender = "";
   myMessageStatusMap.clear();
   lastReadMessageId = null;
-  if (readReceiptTimeoutId) {
-    clearTimeout(readReceiptTimeoutId);
-    readReceiptTimeoutId = null;
-  }
   closePokeMenu();
   hidePokeToast();
-  closeLocationConsent();
-  closeOpponentLocationConsent();
-  hideLocationCard();
 }
 
 function containsBannedWord(message) {
@@ -230,6 +217,15 @@ function stopTyping() {
   socket.emit("typing_stop");
 }
 
+function clearReadReceiptDisplay() {
+  if (lastReadMessageId && myMessageStatusMap.has(lastReadMessageId)) {
+    const meta = myMessageStatusMap.get(lastReadMessageId);
+    meta.innerText = "";
+    meta.classList.add("hidden");
+  }
+  lastReadMessageId = null;
+}
+
 function showReadReceipt(messageId) {
   if (lastReadMessageId && myMessageStatusMap.has(lastReadMessageId)) {
     const prevMeta = myMessageStatusMap.get(lastReadMessageId);
@@ -243,22 +239,17 @@ function showReadReceipt(messageId) {
   target.innerText = "읽음";
   target.classList.remove("hidden");
   lastReadMessageId = messageId;
+}
 
-  if (readReceiptTimeoutId) {
-    clearTimeout(readReceiptTimeoutId);
-  }
-  readReceiptTimeoutId = setTimeout(() => {
-    if (target) {
-      target.innerText = "";
-      target.classList.add("hidden");
-    }
-    readReceiptTimeoutId = null;
-  }, 3000);
+function pokeToastText(topic) {
+  const particle = topic === "MBTI" ? "를" : "을";
+  return `상대방이 ${topic}${particle} 찔러봤습니다!`;
 }
 
 function showPokeToast(message) {
   const toast = document.getElementById("pokeToast");
   toast.innerText = message;
+  toast.hidden = false;
   toast.classList.add("show");
 
   if (pokeToastTimeoutId) {
@@ -266,13 +257,14 @@ function showPokeToast(message) {
   }
   pokeToastTimeoutId = setTimeout(() => {
     hidePokeToast();
-  }, 2500);
+  }, POKE_TOAST_MS);
 }
 
 function hidePokeToast() {
   const toast = document.getElementById("pokeToast");
   toast.classList.remove("show");
   toast.innerText = "";
+  toast.hidden = true;
   if (pokeToastTimeoutId) {
     clearTimeout(pokeToastTimeoutId);
     pokeToastTimeoutId = null;
@@ -301,180 +293,12 @@ function sendPoke(topic) {
   closePokeMenu();
 }
 
-function openLocationConsent() {
-  if (!connected) {
-    alert("상대와 연결된 뒤에 사용할 수 있습니다.");
-    return;
-  }
-  if (isLocationSharing || locationRequestPending) {
-    return;
-  }
-  document.getElementById("locationConsentModal").classList.add("show");
-}
-
-function closeLocationConsent() {
-  document.getElementById("locationConsentModal").classList.remove("show");
-}
-
-function closeOpponentLocationConsent() {
-  document.getElementById("opponentLocationConsentModal").classList.remove("show");
-}
-
-function approveLocationConsent() {
-  closeLocationConsent();
-  locationRequestPending = true;
-  socket.emit("location_share_request");
-  addMessage("system", "위치 공유 요청을 보냈습니다. 상대 동의를 기다리는 중입니다.");
-}
-
-function rejectOpponentLocationConsent() {
-  incomingLocationRequestPending = false;
-  closeOpponentLocationConsent();
-  socket.emit("location_share_response", { accepted: false });
-}
-
-function approveOpponentLocationConsent() {
-  requestLocationPermission(
-    () => {
-      incomingLocationRequestPending = false;
-      closeOpponentLocationConsent();
-      socket.emit("location_share_response", { accepted: true });
-    },
-    () => {
-      incomingLocationRequestPending = false;
-      closeOpponentLocationConsent();
-      socket.emit("location_share_response", { accepted: false, reason: "permission_denied" });
-      addMessage("system", "위치 권한이 필요합니다.");
-    }
-  );
-}
-
-function requestLocationPermission(onSuccess, onFail) {
-  if (!navigator.geolocation) {
-    addMessage("system", "이 브라우저는 위치 공유를 지원하지 않습니다.");
-    if (onFail) onFail();
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      myLocation = {
-        userId: socket.id || "me",
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        updatedAt: new Date().toISOString()
-      };
-      if (onSuccess) onSuccess();
-    },
-    () => {
-      addMessage("system", "위치 권한이 필요합니다.");
-      if (onFail) onFail();
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
-}
-
-function startLocationSharing() {
-  if (isLocationSharing) return;
-  isLocationSharing = true;
-  renderLocationCard();
-  startLocationWatch();
-
-  if (locationStopTimeoutId) {
-    clearTimeout(locationStopTimeoutId);
-  }
-  locationStopTimeoutId = setTimeout(() => {
-    stopLocationSharing("위치 공유가 15분이 지나 자동 종료되었습니다.");
-  }, LOCATION_SHARE_DURATION_MS);
-}
-
-function startLocationWatch() {
-  if (!navigator.geolocation) return;
-  if (locationWatchId !== null) {
-    navigator.geolocation.clearWatch(locationWatchId);
-    locationWatchId = null;
-  }
-
-  locationWatchId = navigator.geolocation.watchPosition(
-    (position) => {
-      myLocation = {
-        userId: socket.id || "me",
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        updatedAt: new Date().toISOString()
-      };
-      socket.emit("location_update", { location: myLocation });
-      renderLocationCard();
-    },
-    () => {
-      addMessage("system", "위치 공유 중 오류가 발생했습니다.");
-    },
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-  );
-}
-
-function stopLocationSharing(message = "", notifyPartner = true) {
-  if (locationWatchId !== null && navigator.geolocation) {
-    navigator.geolocation.clearWatch(locationWatchId);
-    locationWatchId = null;
-  }
-  if (locationStopTimeoutId) {
-    clearTimeout(locationStopTimeoutId);
-    locationStopTimeoutId = null;
-  }
-  if (notifyPartner && (isLocationSharing || locationRequestPending || incomingLocationRequestPending)) {
-    socket.emit("location_share_stop");
-  }
-  isLocationSharing = false;
-  locationRequestPending = false;
-  incomingLocationRequestPending = false;
-  myLocation = null;
-  opponentLocation = null;
-  hideLocationCard();
-  if (message) {
-    addMessage("system", message);
-  }
-}
-
-function stopLocationSharingByButton() {
-  stopLocationSharing("위치 공유를 중지했습니다.");
-}
-
-function hideLocationCard() {
-  const card = document.getElementById("locationShareCard");
-  card.classList.remove("show");
-  card.innerHTML = "";
-}
-
-function renderLocationCard() {
-  if (!isLocationSharing) {
-    hideLocationCard();
-    return;
-  }
-  const card = document.getElementById("locationShareCard");
-  const myText = myLocation
-    ? `${myLocation.latitude.toFixed(5)}, ${myLocation.longitude.toFixed(5)}`
-    : "위치 업데이트 대기 중";
-  const otherText = opponentLocation
-    ? `${opponentLocation.latitude.toFixed(5)}, ${opponentLocation.longitude.toFixed(5)}`
-    : "상대 위치 대기 중";
-
-  card.innerHTML = `
-    <h4>실시간 위치 공유 중</h4>
-    <div class="location-grid">
-      <div class="location-cell">내 위치 핀<br />${myText}</div>
-      <div class="location-cell">상대 위치 핀<br />${otherText}</div>
-    </div>
-    <button class="location-stop-btn" onclick="stopLocationSharingByButton()">위치 공유 중지</button>
-  `;
-  card.classList.add("show");
-}
-
 socket.on("waiting", (msg) => {
   connected = false;
   currentPartnerName = "";
   setStatus("대기 중");
   document.getElementById("partnerInfo").innerText = "상대: 찾는 중";
+  clearReadReceiptDisplay();
   addMessage("system", msg);
 });
 
@@ -504,49 +328,7 @@ socket.on("message_read", (data) => {
 
 socket.on("poke_received", (data) => {
   if (!data?.topic) return;
-  showPokeToast(`상대방이 ${data.topic}를 찔러봤습니다!`);
-});
-
-socket.on("location_share_requested", () => {
-  if (!connected) return;
-  incomingLocationRequestPending = true;
-  document.getElementById("opponentLocationConsentModal").classList.add("show");
-});
-
-socket.on("location_share_response", (data) => {
-  locationRequestPending = false;
-  if (!data?.accepted) {
-    addMessage("system", "상대가 위치 공유를 거절했습니다.");
-    return;
-  }
-
-  requestLocationPermission(
-    () => {
-      addMessage("system", "서로 동의가 완료되어 위치 공유를 시작합니다.");
-      startLocationSharing();
-      socket.emit("location_share_ready");
-    },
-    () => {
-      socket.emit("location_share_stop");
-    }
-  );
-});
-
-socket.on("location_share_started", () => {
-  if (!isLocationSharing) {
-    startLocationSharing();
-  }
-  addMessage("system", "실시간 위치 공유 중입니다.");
-});
-
-socket.on("location_update", (data) => {
-  if (!isLocationSharing || !data?.location) return;
-  opponentLocation = data.location;
-  renderLocationCard();
-});
-
-socket.on("location_share_stopped", (data) => {
-  stopLocationSharing(data?.message || "상대가 위치 공유를 종료했습니다.", false);
+  showPokeToast(pokeToastText(data.topic));
 });
 
 socket.on("typing_start", () => {
@@ -570,10 +352,10 @@ socket.on("typing_stop", () => {
 socket.on("partnerLeft", (msg) => {
   connected = false;
   currentPartnerName = "";
-  stopLocationSharing("", false);
   removeTypingIndicator();
   setStatus("상대 찾는 중...");
   document.getElementById("partnerInfo").innerText = "상대: 찾는 중";
+  clearReadReceiptDisplay();
   addMessage("system", msg);
 });
 
